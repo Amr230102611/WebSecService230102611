@@ -5,7 +5,7 @@
 @section('content')
 <div class="container mt-3">
     <h2>Supermarket Bill</h2>
-    <p><strong>Cashier:</strong> {{ $cashier }}</p> <!-- Display Cashier Name -->
+    <p><strong>Cashier:</strong> {{ $cashier }}</p>
     <p>{{ $id}}</p>
     
     <table class="table table-dark">
@@ -30,7 +30,7 @@
         <tfoot>
             <tr>
                 <td colspan="3" class="text-end"><strong>Total Amount:</strong></td>
-                <td><strong>{{ $total }}</strong></td> <!-- Display Total Amount -->
+                <td><strong>{{ $total }}</strong></td>
             </tr>
         </tfoot>
     </table>
