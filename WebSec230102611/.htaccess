@@ -1,0 +1,17 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine on
+
+    # Redirect all requests to the public directory
+    RewriteCond %{REQUEST_URI} !^public/
+    RewriteRule ^(.*)$ public/$1 [L]
+
+    # Prevent access to .env and other sensitive files
+    RewriteRule ^(.env|.htaccess|composer\.(json|lock)) - [F,L]
+
+    # Block directory listing
+    Options -Indexes
+</IfModule>
+
+<IfModule mime_module>
+    AddHandler application/x-httpd-ea-php82 .php .php8 .phtml
+</IfModule>
