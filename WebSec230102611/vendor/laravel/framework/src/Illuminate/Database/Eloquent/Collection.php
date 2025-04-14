@@ -336,19 +336,6 @@ class Collection extends BaseCollection implements QueueableCollection
     }
 
     /**
-     * Determine if a key does not exist in the collection.
-     *
-     * @param  (callable(TModel, TKey): bool)|TModel|string|int  $key
-     * @param  mixed  $operator
-     * @param  mixed  $value
-     * @return bool
-     */
-    public function doesntContain($key, $operator = null, $value = null)
-    {
-        return ! $this->contains(...func_get_args());
-    }
-
-    /**
      * Get the array of primary keys.
      *
      * @return array<int, array-key>
@@ -673,19 +660,6 @@ class Collection extends BaseCollection implements QueueableCollection
     }
 
     /**
-     * Partition the collection into two arrays using the given callback or key.
-     *
-     * @param  (callable(TModel, TKey): bool)|TModel|string  $key
-     * @param  TModel|string|null  $operator
-     * @param  TModel|null  $value
-     * @return \Illuminate\Support\Collection<int<0, 1>, static<TKey, TModel>>
-     */
-    public function partition($key, $operator = null, $value = null)
-    {
-        return parent::partition($key, $operator, $value)->toBase();
-    }
-
-    /**
      * Get an array with the values of a given key.
      *
      * @param  string|array<array-key, string>|null  $value
@@ -754,8 +728,8 @@ class Collection extends BaseCollection implements QueueableCollection
     protected function getQueueableModelClass($model)
     {
         return method_exists($model, 'getQueueableClassName')
-            ? $model->getQueueableClassName()
-            : get_class($model);
+                ? $model->getQueueableClassName()
+                : get_class($model);
     }
 
     /**
@@ -770,8 +744,8 @@ class Collection extends BaseCollection implements QueueableCollection
         }
 
         return $this->first() instanceof QueueableEntity
-            ? $this->map->getQueueableId()->all()
-            : $this->modelKeys();
+                    ? $this->map->getQueueableId()->all()
+                    : $this->modelKeys();
     }
 
     /**
@@ -837,7 +811,7 @@ class Collection extends BaseCollection implements QueueableCollection
 
         $class = get_class($model);
 
-        if ($this->reject(fn ($model) => $model instanceof $class)->isNotEmpty()) {
+        if ($this->filter(fn ($model) => ! $model instanceof $class)->isNotEmpty()) {
             throw new LogicException('Unable to create query for collection with mixed types.');
         }
 

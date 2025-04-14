@@ -3,7 +3,6 @@
 namespace Illuminate\Validation;
 
 use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Traits\Macroable;
 use Illuminate\Validation\Rules\ArrayRule;
 use Illuminate\Validation\Rules\Can;
@@ -17,7 +16,6 @@ use Illuminate\Validation\Rules\File;
 use Illuminate\Validation\Rules\ImageFile;
 use Illuminate\Validation\Rules\In;
 use Illuminate\Validation\Rules\NotIn;
-use Illuminate\Validation\Rules\Numeric;
 use Illuminate\Validation\Rules\ProhibitedIf;
 use Illuminate\Validation\Rules\RequiredIf;
 use Illuminate\Validation\Rules\Unique;
@@ -217,12 +215,11 @@ class Rule
     /**
      * Get an image file rule builder instance.
      *
-     * @param  bool  $allowSvg
      * @return \Illuminate\Validation\Rules\ImageFile
      */
-    public static function imageFile($allowSvg = false)
+    public static function imageFile()
     {
-        return new ImageFile($allowSvg);
+        return new ImageFile;
     }
 
     /**
@@ -234,44 +231,5 @@ class Rule
     public static function dimensions(array $constraints = [])
     {
         return new Dimensions($constraints);
-    }
-
-    /**
-     * Get a numeric rule builder instance.
-     *
-     * @return \Illuminate\Validation\Rules\Numeric
-     */
-    public static function numeric()
-    {
-        return new Numeric;
-    }
-
-    /**
-     * Compile a set of rules for an attribute.
-     *
-     * @param  string  $attribute
-     * @param  array  $rules
-     * @param  array|null  $data
-     * @return object|\stdClass
-     */
-    public static function compile($attribute, $rules, $data = null)
-    {
-        $parser = new ValidationRuleParser(
-            Arr::undot(Arr::wrap($data))
-        );
-
-        if (is_array($rules) && ! array_is_list($rules)) {
-            $nested = [];
-
-            foreach ($rules as $key => $rule) {
-                $nested[$attribute.'.'.$key] = $rule;
-            }
-
-            $rules = $nested;
-        } else {
-            $rules = [$attribute => $rules];
-        }
-
-        return $parser->explode(ValidationRuleParser::filterConditionalRules($rules, $data));
     }
 }
