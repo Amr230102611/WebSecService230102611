@@ -1,89 +1,55 @@
 <?php
-
-use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\ProductsController;
-use App\Http\Controllers\Users2Controller;
+use App\Http\Controllers\Web\UsersController;
 
-Route::get('/', function () {
-    return view('welcome'); //welcome.blade.php
-});
+Route::get('register', [UsersController::class, 'register'])->name('register');
+Route::post('register', [UsersController::class, 'doRegister'])->name('do_register');
+Route::get('login', [UsersController::class, 'login'])->name('login');
+Route::post('login', [UsersController::class, 'doLogin'])->name('do_login');
+Route::get('logout', [UsersController::class, 'doLogout'])->name('do_logout');
+Route::get('users', [UsersController::class, 'list'])->name('users');
+Route::get('profile/{user?}', [UsersController::class, 'profile'])->name('profile');
+Route::get('users/edit/{user?}', [UsersController::class, 'edit'])->name('users_edit');
+Route::post('users/save/{user}', [UsersController::class, 'save'])->name('users_save');
+Route::get('users/delete/{user}', [UsersController::class, 'delete'])->name('users_delete');
+Route::get('users/edit_password/{user?}', [UsersController::class, 'editPassword'])->name('edit_password');
+Route::post('users/save_password/{user}', [UsersController::class, 'savePassword'])->name('save_password');
 
-Route::get('/even', function () {
-    return view('even');  //even.blade.php
-});
-
-Route::get('/prime', function () {
-    return view('prime'); //prime.blade.php
-});
-
-
-Route::get('/multable/{number?}', function ($number = null) {
-    return view('multable', ['j' => $number ?? 2]); // commented the first one because it already gets the default value from here (multable.blade.php)
-});
-
-Route::get('/factorial/{number?}', function ($number = null) {
-    return view('factorial', ['number' => $number ?? 5]); //factorial.blade.php (merged both mul)
-});
-
-// ---------------------------------------------------------------------- //
-
-Route::get('/minitest', function () {
-    $bill = [
-        ['item' => 'Milk', 'quantity' => 2, 'price' => 20],
-        ['item' => 'Bread', 'quantity' => 1, 'price' => 15],
-        ['item' => 'Eggs', 'quantity' => 12, 'price' => 50],
-    ];
-
-    $id="#123412";
-    $cashier = "kamel";
-    $total = array_reduce($bill, function ($sum, $entry) {
-        return $sum + ($entry['quantity'] * $entry['price']);
-    }, 0);
-
-    return view('minitest', compact('id','bill', 'cashier', 'total'));
-});
-
-
-Route::get('/transcript', function () {
-    $courses= [
-        ["name" => "Cyber and Information Security", "degree" => 80 , "credit" => 3],
-        ["name" => "Advanced Networks", "degree" => 90 , "credit" => 4],
-        ["name" => "Social Responsibility", "degree" => 70 , "credit" => 2],
-    ];
-    $calculateGPA = function ($courses) {
-        $totalPoints = 0;
-        $totalCredits = 0;
-
-        foreach ($courses as $course) {
-            $totalPoints += ($course['degree'] * $course['credit']);
-            $totalCredits += $course['credit'];
-        }
-
-        return ($totalCredits > 0) ? round($totalPoints / ($totalCredits * 100) * 4, 2) : 0;
-    };
-
-    $gpa = $calculateGPA($courses);
-
-    return view('transcript', compact('courses', 'gpa'));
-});
-
-// Lecture 3 //
+// Customer credit management
+Route::post('users/add_credit/{user}', [UsersController::class, 'addCredit'])->name('add_credit');
+// Customer listing for employees
+Route::get('customers', [UsersController::class, 'listCustomers'])->name('customers');
+// Employee creation for admins
+Route::get('employees/create', [UsersController::class, 'createEmployee'])->name('create_employee');
+Route::post('employees/create', [UsersController::class, 'createEmployee'])->name('do_create_employee');
 
 Route::get('products', [ProductsController::class, 'list'])->name('products_list');
 Route::get('products/edit/{product?}', [ProductsController::class, 'edit'])->name('products_edit');
 Route::post('products/save/{product?}', [ProductsController::class, 'save'])->name('products_save');
 Route::get('products/delete/{product}', [ProductsController::class, 'delete'])->name('products_delete');
+// Product purchase
+Route::get('products/buy/{product}', [ProductsController::class, 'buy'])->name('products_buy');
 
-// Users 2 //
-Route::prefix('users2')->group(function () {
-    Route::get('/users2', [Users2Controller::class, 'index'])->name('users2.index');
-    Route::get('/', [Users2Controller::class, 'index'])->name('users2.index');
-    Route::get('/create', [Users2Controller::class, 'create'])->name('users2.create');
-    Route::post('/store', [Users2Controller::class, 'store'])->name('users2.store');
-    Route::get('/edit/{id}', [Users2Controller::class, 'edit'])->name('users2.edit');
-    Route::post('/update/{id}', [Users2Controller::class, 'update'])->name('users2.update');
-    Route::get('/delete/{id}', [Users2Controller::class, 'destroy'])->name('users2.delete');
+Route::get('/', function () {
+    return view('welcome');
+});
 
+Route::get('/multable', function (Request $request) {
+    $j = $request->number??5;
+    $msg = $request->msg;
+    return view('multable', compact("j", "msg"));
+});
 
+Route::get('/even', function () {
+    return view('even');
+});
+
+Route::get('/prime', function () {
+    return view('prime');
+});
+
+Route::get('/test', function () {
+    return view('test');
 });

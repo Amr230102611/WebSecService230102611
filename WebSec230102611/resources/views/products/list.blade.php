@@ -1,12 +1,14 @@
 @extends('layouts.master')
-@section('title', 'list page')
+@section('title', 'Test Page')
 @section('content')
 <div class="row mt-2">
     <div class="col col-10">
         <h1>Products</h1>
     </div>
     <div class="col col-2">
+        @can('add_products')
         <a href="{{route('products_edit')}}" class="btn btn-success form-control">Add Product</a>
+        @endcan
     </div>
 </div>
 <form>
@@ -57,10 +59,14 @@
 					        <h3>{{$product->name}}</h3>
 					    </div>
 					    <div class="col col-2">
+                            @can('edit_products')
 					        <a href="{{route('products_edit', $product->id)}}" class="btn btn-success form-control">Edit</a>
+                            @endcan
 					    </div>
 					    <div class="col col-2">
+                            @can('delete_products')
 					        <a href="{{route('products_delete', $product->id)}}" class="btn btn-danger form-control">Delete</a>
+                            @endcan
 					    </div>
 					</div>
 
@@ -70,6 +76,27 @@
                         <tr><th>Code</th><td>{{$product->code}}</td></tr>
                         <tr><th>Price</th><td>{{$product->price}}</td>
                         <tr><th>Description</th><td>{{$product->description}}</td></tr>
+                        <tr><th>Stock</th><td>{{$product->stock_quantity ?? 0}}</td></tr>
+                        @auth
+                            @hasrole('Customer')
+                            <tr>
+                                <th>Action</th>
+                                <td>
+                                    @if(($product->stock_quantity ?? 0) > 0)
+                                        @if(auth()->user()->credit >= $product->price)
+                                            <a href="{{ route('products_buy', $product->id) }}" class="btn btn-primary">Buy Now</a>
+                                        @else
+                                            <div class="alert alert-warning">
+                                                Insufficient credit. You need {{ $product->price - auth()->user()->credit }} more credit.
+                                            </div>
+                                        @endif
+                                    @else
+                                        <div class="alert alert-secondary">Out of Stock</div>
+                                    @endif
+                                </td>
+                            </tr>
+                            @endhasrole
+                        @endauth
                     </table>
                 </div>
             </div>

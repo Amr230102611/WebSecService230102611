@@ -87,13 +87,6 @@ class Migrator
     protected $output;
 
     /**
-     * The pending migrations to skip.
-     *
-     * @var list<string>
-     */
-    protected static $withoutMigrations = [];
-
-    /**
      * Create a new migrator instance.
      *
      * @param  \Illuminate\Database\Migrations\MigrationRepositoryInterface  $repository
@@ -149,25 +142,9 @@ class Migrator
      */
     protected function pendingMigrations($files, $ran)
     {
-        $migrationsToSkip = $this->migrationsToSkip();
-
         return (new Collection($files))
-            ->reject(fn ($file) => in_array($migrationName = $this->getMigrationName($file), $ran) ||
-                in_array($migrationName, $migrationsToSkip)
-            )
+            ->reject(fn ($file) => in_array($this->getMigrationName($file), $ran))
             ->values()
-            ->all();
-    }
-
-    /**
-     * Get list of pending migrations to skip.
-     *
-     * @return list<string>
-     */
-    protected function migrationsToSkip()
-    {
-        return (new Collection(self::$withoutMigrations))
-            ->map($this->getMigrationName(...))
             ->all();
     }
 
@@ -437,8 +414,8 @@ class Migrator
 
         $this->getSchemaGrammar($connection)->supportsSchemaTransactions()
             && $migration->withinTransaction
-                ? $connection->transaction($callback)
-                : $callback();
+                    ? $connection->transaction($callback)
+                    : $callback();
     }
 
     /**
@@ -541,8 +518,8 @@ class Migrator
 
         if (is_object($migration)) {
             return method_exists($migration, '__construct')
-                ? $this->files->getRequire($path)
-                : clone $migration;
+                    ? $this->files->getRequire($path)
+                    : clone $migration;
         }
 
         return new $class;
@@ -619,17 +596,6 @@ class Migrator
     public function paths()
     {
         return $this->paths;
-    }
-
-    /**
-     * Set the pending migrations to skip.
-     *
-     * @param  list<string>  $migrations
-     * @return void
-     */
-    public static function withoutMigrations(array $migrations)
-    {
-        static::$withoutMigrations = $migrations;
     }
 
     /**
