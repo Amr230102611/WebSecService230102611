@@ -3,12 +3,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\ProductsController;
 use App\Http\Controllers\Web\UsersController;
+use App\Http\Controllers\Web\SocialAuthController;
 
 Route::get('register', [UsersController::class, 'register'])->name('register');
 Route::post('register', [UsersController::class, 'doRegister'])->name('do_register');
 Route::get('login', [UsersController::class, 'login'])->name('login');
-Route::post('login', [UsersController::class, 'doLogin'])->name('do_login');
+Route::post('login', [UsersController::class, 'doLogin'])->middleware('throttle:5,1')->name('do_login');
 Route::get('logout', [UsersController::class, 'doLogout'])->name('do_logout');
+
+// Social Login Routes
+Route::get('auth/redirect/{provider}', [SocialAuthController::class, 'redirectToProvider'])->name('social.redirect');
+Route::get('auth/callback/{provider}', [SocialAuthController::class, 'handleProviderCallback'])->name('social.callback');
+
 Route::get('users', [UsersController::class, 'list'])->name('users');
 Route::get('profile/{user?}', [UsersController::class, 'profile'])->name('profile');
 Route::get('users/edit/{user?}', [UsersController::class, 'edit'])->name('users_edit');

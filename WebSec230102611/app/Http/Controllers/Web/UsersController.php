@@ -20,8 +20,9 @@ class UsersController extends Controller {
     public function list(Request $request) {
         if(!auth()->user()->hasPermissionTo('show_users'))abort(401);
         $query = User::select('*');
-        $query->when($request->keywords, 
-        fn($q)=> $q->where("name", "like", "%$request->keywords%"));
+        if ($request->keywords) {
+            $query->where("name", "like", "%" . e($request->keywords) . "%");
+        }
         $users = $query->get();
         return view('users.list', compact('users'));
     }
@@ -72,9 +73,13 @@ class UsersController extends Controller {
     public function doLogin(Request $request) {
     	
     	if(!Auth::attempt(['email' => $request->email, 'password' => $request->password]))
-            return redirect()->back()->withInput($request->input())->withErrors('Invalid login information.');
+            return redirect()->back()->withInput($request->only('email'))->withErrors('Invalid login information.');
 
         $user = User::where('email', $request->email)->first();
+        
+        // Log successful login attempt for security auditing
+        \Log::info('User login successful: ' . $user->email . ' from IP: ' . $request->ip());
+        
         Auth::setUser($user);
 
         return redirect('/');
@@ -222,8 +227,9 @@ class UsersController extends Controller {
         if(!auth()->user()->hasAnyRole(['Employee', 'Admin'])) abort(401);
         
         $query = User::role('Customer')->select('*');
-        $query->when($request->keywords, 
-        fn($q)=> $q->where("name", "like", "%$request->keywords%"));
+        if ($request->keywords) {
+            $query->where("name", "like", "%" . e($request->keywords) . "%");
+        }
         $customers = $query->get();
         
         return view('users.customers', compact('customers'));
