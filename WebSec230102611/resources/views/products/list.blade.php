@@ -1,6 +1,21 @@
 @extends('layouts.master')
 @section('title', 'Test Page')
 @section('content')
+@if (session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 <div class="row mt-2">
     <div class="col col-10">
         <h1>Products</h1>
@@ -11,6 +26,14 @@
         @endcan
     </div>
 </div>
+
+<!-- <div class="card my-2">
+    <div class="card-body">
+        Dear <span id='name'>{{ auth()->user()->name }}</span>, your credit is <span
+        id='credit'>{{ auth()->user()->credit }}</span>
+    </div>
+</div> -->
+
 <form>
     <div class="row">
         <div class="col col-sm-2">
@@ -45,6 +68,13 @@
     </div>
 </form>
 
+<!-- @if(!empty(request()->keywords))
+    <div class= 'card mt-2'>
+        <div class='card-body'>
+            view search results: <span>{!! request()->keywords !!}</span>
+        </div>
+    </div>
+@endif -->
 
 @foreach($products as $product)
     <div class="card mt-2">

@@ -160,14 +160,19 @@ class Number
      * @param  int|float  $bytes
      * @param  int  $precision
      * @param  int|null  $maxPrecision
+     * @param  bool  $useBinaryPrefix
      * @return string
      */
-    public static function fileSize(int|float $bytes, int $precision = 0, ?int $maxPrecision = null)
+    public static function fileSize(int|float $bytes, int $precision = 0, ?int $maxPrecision = null, bool $useBinaryPrefix = false)
     {
-        $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+        $base = $useBinaryPrefix ? 1024 : 1000;
 
-        for ($i = 0; ($bytes / 1024) > 0.9 && ($i < count($units) - 1); $i++) {
-            $bytes /= 1024;
+        $units = $useBinaryPrefix
+            ? ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB', 'RiB', 'QiB']
+            : ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB', 'RB', 'QB'];
+
+        for ($i = 0; ($bytes / $base) > 0.9 && ($i < count($units) - 1); $i++) {
+            $bytes /= $base;
         }
 
         return sprintf('%s %s', static::format($bytes, $precision, $maxPrecision), $units[$i]);
@@ -267,21 +272,22 @@ class Number
      *
      * @param  int|float  $to
      * @param  int|float  $by
+     * @param  int|float  $start
      * @param  int|float  $offset
      * @return array
      */
-    public static function pairs(int|float $to, int|float $by, int|float $offset = 1)
+    public static function pairs(int|float $to, int|float $by, int|float $start = 0, int|float $offset = 1)
     {
         $output = [];
 
-        for ($lower = 0; $lower < $to; $lower += $by) {
-            $upper = $lower + $by;
+        for ($lower = $start; $lower < $to; $lower += $by) {
+            $upper = $lower + $by - $offset;
 
             if ($upper > $to) {
                 $upper = $to;
             }
 
-            $output[] = [$lower + $offset, $upper];
+            $output[] = [$lower, $upper];
         }
 
         return $output;

